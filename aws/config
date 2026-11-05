@@ -1,0 +1,12 @@
+# Lab-only AWS config. Selected by env.sh via AWS_CONFIG_FILE.
+[profile floci-lab]
+region = us-east-2
+output = json
+endpoint_url = http://localhost:4566
+
+# Used only by scripts/01-bootstrap-iam.sh to mint the lab IAM user.
+# Floci accepts any key on its API surface; this one is never valid anywhere else.
+[profile floci-bootstrap]
+region = us-east-2
+output = json
+endpoint_url = http://localhost:4566

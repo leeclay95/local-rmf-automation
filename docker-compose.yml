@@ -1,0 +1,61 @@
+# Floci AWS emulator — the "cloud" this lab runs on.
+#
+# Published ports:
+#   4566      AWS API endpoint (all services, path/host routed)
+#   443       ALB HTTPS listeners  -> https://stigman.mil, https://keycloak.mil
+#   8080->80  ALB HTTP  listeners  (host :80 is taken by apache2; see README)
+#   5353->53  Route53 embedded DNS, for `dig` verification from the host
+#
+# k3s API server ports (6500-6599) are bound on the host directly by Docker when
+# an EKS cluster is created, so they need no mapping here.
+
+# Pinned so the project -- and therefore the network name below, which Floci and
+# the scripts both depend on -- does not change with the clone directory name.
+# Keep in step with LAB_PROJECT in env.sh.
+name: stig-cloud-lab
+
+services:
+  floci:
+    image: floci/floci:latest
+    container_name: floci
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "4566:4566"
+      - "443:443"
+      - "8080:80"
+      - "5353:53/udp"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+    environment:
+      # --- persistence (survives `docker compose down` and host reboots) ---
+      FLOCI_STORAGE_MODE: persistent
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      FLOCI_STORAGE_PRUNE_VOLUMES_ON_DELETE: "false"
+
+      # --- identity on the shared Docker network ---
+      FLOCI_HOSTNAME: floci
+      FLOCI_BASE_URL: http://floci:4566
+
+      # Real-Docker services (EKS k3s, RDS, ...) are launched onto this network so
+      # Floci, the k3s containers and the ALB proxy can all reach each other.
+      FLOCI_SERVICES_DOCKER_NETWORK: stig-cloud-lab_default
+
+      # --- EKS ---
+      # Keep k3s's local-path provisioner so the MySQL PVC actually binds.
+      # (Floci's aws-ebs-csi-driver addon is control-plane metadata only.)
+      FLOCI_SERVICES_EKS_DEFAULT_STORAGE_CLASS: "true"
+      # describe-cluster advertises https://localhost:<hostPort>, which is what
+      # `aws eks update-kubeconfig` needs from the host.
+      FLOCI_SERVICES_EKS_ENDPOINT_MODE: host
+      FLOCI_SERVICES_EKS_API_SERVER_BASE_PORT: "6500"
+      FLOCI_SERVICES_EKS_API_SERVER_MAX_PORT: "6599"
+    networks:
+      floci_default:
+        aliases:
+          - localhost.floci.io
+
+networks:
+  floci_default:
+    name: stig-cloud-lab_default
