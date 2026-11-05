@@ -27,7 +27,7 @@
 
 ## What this is
 
-Standing up an RMF toolchain to *practise* with is normally the hard part. STIG
+Standing up an RMF toolchain to *practice* with is normally the hard part. STIG
 Manager wants a database, an OIDC provider, a load balancer and TLS; doing it the
 way it is really deployed means an AWS account, an ALB, two EKS clusters and a
 bill. So most people learn the scanner and never see the pipeline.
