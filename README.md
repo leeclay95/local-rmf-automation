@@ -69,9 +69,10 @@ uploading nothing. Those are the lessons that transfer.
 
 - **Run the full RMF loop** — scan a host with Evaluate-STIG, upload to STIG
   Manager over OIDC, review findings in the UI, query them in SQL.
-- **Write and debug STIG answer files**, including PowerShell `<ValidationCode>`.
-  A [Claude Code skill](.claude/skills/stig-answerfile-validation/) with a test
-  harness ships in `.claude/skills/`.
+- **Write and debug STIG answer files**, including PowerShell `<ValidationCode>`
+  — the execution model, the five ways it fails silently, and how to test a
+  snippet before a scan are documented in
+  [TROUBLESHOOTING.md](TROUBLESHOOTING.md#a-client-succeeds-but-nothing-arrives--the-lab-ca-is-not-in-the-system-trust-store).
 - **Break it on purpose.** Every failure mode is documented with its symptom,
   root cause and fix in [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 - **Read the Terraform** as a worked example of EKS + ALB + ACM + IRSA wiring,
@@ -243,7 +244,6 @@ scripts/
 terraform/
   01-infra/                  VPC, IAM, EKS, ACM, ALBs, Route53
   02-workloads/              Keycloak, MySQL, stigman-api, CoreDNS overrides
-.claude/skills/              STIG answer-file validation skill + test harness
 TROUBLESHOOTING.md           every failure mode, and the verification walkthrough
 ```
 

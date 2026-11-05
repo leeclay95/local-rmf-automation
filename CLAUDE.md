@@ -256,10 +256,11 @@ the directory name:
 
 ## Evaluate-STIG answer files
 
-The `stig-answerfile-validation` skill in `.claude/skills/` holds the full rules
-for writing `<ValidationCode>`, with a test harness. One distinction is worth
-stating here because it is the first thing to check when an answer file "does
-not work", and because it looks identical to a broken validation script:
+A `stig-answerfile-validation` skill holds the full rules for writing
+`<ValidationCode>` with a test harness, but it lives outside the repository
+(`.claude/` is gitignored), so do not assume it is present. One distinction is
+worth stating here because it is the first thing to check when an answer file
+"does not work", and because it looks identical to a broken validation script:
 
 **`ExpectedStatus` must equal the status the scan actually produced for that
 check on that host.** It is a hard gate at weight 0 — on a mismatch the
